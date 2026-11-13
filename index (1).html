@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ms"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ZN Diary</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#4a2a6a"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="ZN Diary">
+<style>
+:root{--bg:#faf6f1;--ink:#2d2430;--card:#fff;--mut:#8a7f8c;--acc:#a8477f;--line:#eadfe6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17121a;--ink:#f1e9f3;--card:#241c29;--mut:#a597a9;--acc:#e07ab8;--line:#3a2e40}}
+:root[data-theme="dark"]{--bg:#17121a;--ink:#f1e9f3;--card:#241c29;--mut:#a597a9;--acc:#e07ab8;--line:#3a2e40}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Georgia,"Times New Roman",serif;min-height:100vh;transition:background .4s}
+button,input,select,textarea{font:inherit;color:inherit}
+#app{max-width:520px;margin:0 auto;padding:16px 16px 90px}
+h3{margin:22px 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.gl{font-size:12px;color:var(--mut);margin:10px 0 4px}
+.tb{text-align:center;letter-spacing:.5em;opacity:.85;margin-bottom:6px}
+#splash{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,#4a2a6a,#150d22);color:#fff;transition:opacity .7s,transform .7s}
+#splash.out{opacity:0;transform:scale(1.08);pointer-events:none}
+#splash .logo{width:150px;animation:pop 1.2s cubic-bezier(.2,1.4,.4,1) both}
+#splash h1{margin:14px 0 0;font-size:34px;letter-spacing:.14em;animation:rise 1s .8s both}
+#splash p{margin:4px 0 0;opacity:.7;font-style:italic;animation:rise 1s 1.2s both}
+@keyframes pop{from{transform:scale(.2) rotate(-90deg);opacity:0}}
+@keyframes rise{from{transform:translateY(14px);opacity:0}}
+.logo{position:relative;display:block;cursor:pointer}
+.logo svg{width:100%;height:auto;overflow:visible}
+.ring{transform-origin:50px 50px;animation:spin 8s linear infinite}
+.tw{animation:tw 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.tw:nth-child(2){animation-delay:.5s}.tw:nth-child(3){animation-delay:1s}.tw:nth-child(4){animation-delay:1.5s}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes tw{0%,100%{opacity:.2;transform:scale(.5)}50%{opacity:1;transform:scale(1.2)}}
+.sp{position:absolute;left:50%;top:50%;pointer-events:none;color:#ffd96b;animation:fly1 .9s ease-out forwards}
+@keyframes fly1{to{transform:translate(var(--x),var(--y)) scale(.2);opacity:0}}
+.book{position:relative;height:340px;max-width:260px;margin:8px auto;border-radius:6px 16px 16px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:6px 8px 22px rgba(0,0,0,.35);overflow:hidden}
+.book .logo{width:96px}
+.book h2{margin:10px 0 2px;letter-spacing:.12em}
+.book p{margin:0;font-size:13px;opacity:.85}
+.book .em{position:absolute;right:10px;bottom:6px;font-size:64px;opacity:.4;line-height:1}
+.book.hard{border-left:14px solid rgba(0,0,0,.25)}
+.book.spiral{border-radius:8px 14px 14px 8px;padding-left:22px}
+.book.spiral:before{content:"";position:absolute;left:6px;top:0;bottom:0;width:14px;background:radial-gradient(circle,#ddd 4px,#555 5px,transparent 6px) 0 0/14px 26px repeat-y}
+.book.leather{border:3px solid rgba(255,255,255,.35);outline:2px dashed rgba(255,255,255,.5);outline-offset:-14px}
+.book.leather:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(0,0,0,.06) 0 2px,transparent 2px 5px);pointer-events:none}
+.sw{display:flex;gap:10px;flex-wrap:wrap}
+.sw button{width:46px;height:46px;border-radius:50%;border:3px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;padding:0}
+.sw button.sel{border-color:var(--acc);box-shadow:0 0 0 2px var(--bg) inset}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1 1 28%;padding:10px 6px;border:1px solid var(--line);background:var(--card);border-radius:10px;cursor:pointer}
+.seg button.sel{background:var(--acc);color:#fff;border-color:var(--acc)}
+.pri{display:block;width:100%;margin-top:22px;padding:14px;border:0;border-radius:12px;background:var(--acc);color:#fff;font-size:17px;cursor:pointer}
+.page{position:relative;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 16px 12px;margin-bottom:16px;box-shadow:0 3px 12px rgba(0,0,0,.08);transform-origin:left center}
+.page.spiral{padding-left:34px}
+.page.spiral:before{content:"";position:absolute;left:8px;top:0;bottom:0;width:14px;background:radial-gradient(circle,var(--bg) 4px,var(--mut) 5px,transparent 6px) 0 0/14px 28px repeat-y}
+.page.leather{border:2px solid var(--acc);outline:1px dashed var(--mut);outline-offset:-7px}
+.page.hard{border-left:8px solid var(--acc)}
+.fl{animation:fl .5s ease both}.fr{animation:fr .5s ease both}
+@keyframes fl{from{transform:perspective(900px) rotateY(80deg);opacity:.2}}
+@keyframes fr{from{transform:perspective(900px) rotateY(-80deg);opacity:.2}}
+.dsel{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.dsel .dn{font-weight:bold;color:var(--acc);min-width:60px}
+select,input[type=text],input[type=date],input[type=number]{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+input.y{width:74px}
+textarea{width:100%;min-height:220px;border:0;resize:vertical;background:repeating-linear-gradient(transparent 0 27px,var(--line) 27px 28px);line-height:28px;padding:0;outline:0}
+.del{background:none;border:0;color:var(--mut);cursor:pointer;font-size:13px}
+.ctl{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ctl button,.add{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 14px;cursor:pointer}
+.add{width:100%;margin-top:6px;border-style:dashed}
+.empty{text-align:center;color:var(--mut);padding:40px 10px}
+.mc{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+.mc img{width:100%;max-height:300px;object-fit:cover;display:block}
+.mc div{padding:12px 14px}
+.chip{display:inline-block;background:var(--acc);color:#fff;border-radius:99px;padding:1px 10px;font-size:12px}
+.mc small{color:var(--mut)}
+#sheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);display:none;align-items:flex-end}
+#sheet.on{display:flex}
+#sheet>div{background:var(--bg);width:100%;max-width:520px;margin:0 auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
+#sheet label{display:block;margin:10px 0 4px;font-size:13px;color:var(--mut)}
+#sheet input,#sheet select,#sheet textarea{width:100%}
+#sheet textarea{min-height:90px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;line-height:1.4}
+#ph{width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-top:8px;display:none}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;background:none;padding:12px 4px;cursor:pointer;color:var(--mut)}
+nav button.on{color:var(--acc);font-weight:bold}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222;color:#fff;padding:8px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.3s;z-index:60;pointer-events:none}
+#toast.on{opacity:1}
+#live{position:fixed;inset:0;z-index:15;pointer-events:none;overflow:hidden}
+.f{position:absolute;opacity:.85;line-height:1}
+@keyframes fall{from{transform:translate(0,-12vh) rotate(0)}to{transform:translate(var(--dx),112vh) rotate(360deg)}}
+@keyframes rise{from{transform:translate(0,0) rotate(0)}to{transform:translate(var(--dx),-115vh) rotate(200deg)}}
+@keyframes fly{to{transform:translate(125vw,var(--dy))}}
+@keyframes drift{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--dx),var(--dy)) rotate(25deg)}}
+@keyframes snit{0%{transform:translate(-12vw,0)}18%{transform:translate(28vw,35vh)}36%{transform:translate(62vw,-15vh)}54%{transform:translate(35vw,45vh)}74%{transform:translate(85vw,10vh)}100%{transform:translate(115vw,30vh)}}
+.w1{transform-origin:17px 12px;animation:w1 .12s infinite alternate}.w2{transform-origin:29px 12px;animation:w2 .12s infinite alternate}
+@keyframes w1{from{transform:rotate(-30deg)}to{transform:rotate(15deg)}}
+@keyframes w2{from{transform:rotate(30deg)}to{transform:rotate(-15deg)}}
+
+.av{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--line);overflow:hidden;flex:none;width:var(--s);height:var(--s);font-size:calc(var(--s)*.6);line-height:1}
+.av img{width:100%;height:100%;object-fit:cover}
+.row{display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer}
+.row small{color:var(--mut)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px}
+.chips button{white-space:nowrap;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:4px 12px;cursor:pointer}
+.chips .sel{background:var(--acc);color:#fff;border-color:var(--acc)}
+.seg{margin-bottom:10px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal b{font-size:12px;color:var(--mut)}
+.cal button{aspect-ratio:1;border:1px solid var(--line);background:var(--card);border-radius:10px;cursor:pointer;position:relative;padding:0}
+.cal .td{border-color:var(--acc);font-weight:bold}
+.cal .sel{background:var(--acc);color:#fff}
+.cal .dot:after{content:"";position:absolute;bottom:4px;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--acc)}
+.cal .sel.dot:after{background:#fff}
+.chat{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.m{max-width:78%;padding:8px 12px;border-radius:16px;background:var(--card);border:1px solid var(--line);align-self:flex-start;word-wrap:break-word}
+.m.me{align-self:flex-end;background:var(--acc);color:#fff;border-color:var(--acc)}
+.m img{max-width:100%;border-radius:10px;display:block}
+.m .st{font-size:56px;line-height:1.1}
+.m small{display:block;font-size:11px;opacity:.75;text-align:right}
+.dsep{text-align:center;font-size:12px;color:var(--mut);margin:6px 0}
+.cbar{position:sticky;bottom:56px;background:var(--bg);padding:8px 0;display:flex;gap:6px;align-items:center}
+.cbar input[type=text]{flex:1;min-width:0}
+.cbar .add{padding:8px 12px}
+.stk{display:flex;flex-wrap:wrap;gap:6px;background:var(--card);padding:8px;border-radius:12px;margin-bottom:8px}
+.stk button{font-size:30px;background:none;border:0;cursor:pointer}
+.bd{background:#e63946;color:#fff;border-radius:99px;font-size:11px;padding:0 6px}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 12px;margin-bottom:10px}
+summary{cursor:pointer;padding:8px 0;font-weight:bold}
+.st2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+.st2 div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;font-size:13px}
+.st2 b{display:block;font-size:24px;color:var(--acc)}
+.book.sm{height:120px;width:86px;margin:0;flex:none;border-radius:4px 8px 8px 4px;box-shadow:3px 4px 10px rgba(0,0,0,.3)}
+.book.sm .logo{width:40px}.book.sm h2{font-size:11px;margin:2px 0 0}.book.sm.spiral:before{display:none}.book.sm.spiral{padding-left:0}
+</style></head><body>
+<div id="splash"><span class="logo" id="slogo"></span><h1>ZN DIARY</h1><p></p></div>
+<div id="app"></div><div id="live"></div>
+<div id="sheet"><div id="sbody"></div></div>
+<nav><button data-v="home"></button><button data-v="diary"></button><button data-v="cal"></button><button data-v="chat"></button><button data-v="set"></button></nav>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const LOGO='<svg viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd96b"/><stop offset="1" stop-color="#ff7ac8"/></linearGradient></defs><circle cx="50" cy="50" r="30" fill="rgba(255,255,255,.12)" stroke="url(#g)" stroke-width="3"/><text x="50" y="59" text-anchor="middle" font-size="26" font-weight="bold" fill="url(#g)" font-family="Georgia,serif">ZN</text><g class="ring"><circle cx="50" cy="8" r="2.5" fill="#ffd96b"/><circle cx="92" cy="50" r="2" fill="#ff7ac8"/><circle cx="14" cy="76" r="2" fill="#9ad8ff"/></g><path class="tw" d="M86 14l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#ffd96b"/><path class="tw" d="M10 30l1.5 4.5 4.5 1.5-4.5 1.5L10 42l-1.5-4.5L4 36l4.5-1.5z" fill="#fff"/><path class="tw" d="M82 84l1.5 4.5 4.5 1.5-4.5 1.5L82 96l-1.5-4.5L76 90l4.5-1.5z" fill="#ff7ac8"/><path class="tw" d="M20 90l1.5 4.5 4.5 1.5-4.5 1.5L20 102l-1.5-4.5L14 96l4.5-1.5z" fill="#9ad8ff"/></svg>';
+const SN='<svg width="46" height="24" viewBox="0 0 46 24"><path class="w1" d="M17 12C10 2 3 2 1 5c3 3 8 6 16 7z" fill="#f4e6b0"/><path class="w2" d="M29 12C36 2 43 2 45 5c-3 3-8 6-16 7z" fill="#f4e6b0"/><circle cx="23" cy="12" r="6" fill="#ffc933" stroke="#b8860b"/></svg>';
+const COV=[
+{n:'Senja',b:'linear-gradient(135deg,#f6a5c0,#8a4fff)',i:'#fff',e:''},
+{n:'Lautan',b:'linear-gradient(135deg,#43c6ac,#191654)',i:'#fff',e:''},
+{n:'Mawar',b:'linear-gradient(135deg,#ff9a9e,#fad0c4)',i:'#5a2a3a',e:''},
+{n:'Hutan',b:'linear-gradient(135deg,#134e5e,#71b280)',i:'#fff',e:''},
+{n:'Malam',b:'radial-gradient(circle at 30% 20%,#3a3a7a,#0b0b1e)',i:'#ffe9a8',e:''},
+{n:'Emas',b:'linear-gradient(135deg,#f7d97c,#b8862b)',i:'#3a2a08',e:''},
+{n:'Lion House',b:'linear-gradient(135deg,#7f0909,#d4a017)',i:'#ffe9a8',e:'🦁'},
+{n:'Serpent House',b:'linear-gradient(135deg,#0d3b24,#9aa5a8)',i:'#e6f0e9',e:'🐍'},
+{n:'Eagle House',b:'linear-gradient(135deg,#0e1a40,#946b2d)',i:'#f0e2c4',e:'🦅'},
+{n:'Badger House',b:'linear-gradient(135deg,#e8b923,#3a2f2a)',i:'#fff',e:'🦡'},
+{n:'Halloween',b:'linear-gradient(135deg,#ff7a00,#2b0b3a)',i:'#fff',e:'🎃'},
+{n:'Candy',b:'linear-gradient(135deg,#ff6ec7,#ffb347,#7ee8fa)',i:'#4a1042',e:'🍬'},
+{n:'Nature',b:'linear-gradient(135deg,#56ab2f,#a8e063)',i:'#14340c',e:'🌿'},
+{n:'Magic',b:'linear-gradient(135deg,#3a1c71,#d76d77,#ffaf7b)',i:'#fff',e:'🪄'},
+{n:'Blocks',b:'linear-gradient(135deg,#00a2ff,#0b3a66)',i:'#fff',e:'🧱'},
+{n:'Hero',b:'linear-gradient(135deg,#d90429,#1d3557)',i:'#fff',e:'🦸'}];
+const THM=[['color','🌸','#d6457f','#fff3f7','#ffffff','#f6d3e0','#3a2430','#9a7f8b'],['color','💙','#2f6fd6','#eef5ff','#ffffff','#cfe0f7','#1d2a40','#6f819c'],['color','💚','#2e9a5b','#effaf2','#ffffff','#cdebd7','#1c3326','#6f9580'],['color','💜','#7a4fd6','#f5f0ff','#ffffff','#dccff5','#2a2040','#8c7fa8'],['hero','🦸','#e63946','#0f1b33','#1b2a4a','#2d416b','#f4f6fb','#9fb0d0'],['hero','⚡','#ffd60a','#14141f','#212134','#35354f','#f5f5f5','#a5a5bd'],['animal','🐾','#c2701f','#fbf1e3','#fffaf2','#ecd5b5','#3a2a18','#9a8366'],['animal','🐼','#333333','#f4f4f4','#ffffff','#dddddd','#222222','#888888'],['nature','🌿','#3b8d3b','#eef7e6','#fbfff6','#cfe5bb','#23361c','#76926a'],['nature','🌊','#1f8ea3','#e8f7fa','#ffffff','#bfe3ea','#16363d','#6a9aa3']];
+const LV={nature:{e:['🍃','🌸','🦋','🌿'],a:'fall',n:14},halloween:{e:['🦇','🎃','👻','🕷️'],a:'fly',n:9},snitch:{e:[SN],a:'snit',n:3},candy:{e:['🍬','🍭','🍓','🍒'],a:'rise',n:14},planet:{e:['🪐','🌍','🌙','⭐','☄️'],a:'drift',n:9}};
+const DL={ms:['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'],en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']};
+const ML={ms:['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'],en:['January','February','March','April','May','June','July','August','September','October','November','December']};
+const CT={ms:['Dating','Event','Percutian','Keluarga','Kawan','Lain-lain'],en:['Dating','Event','Holiday','Family','Friends','Others']};
+const T={ms:{nav:['✦ Kulit','📖 Diari','📷 Momen'],sub:'Setiap hari ada ceritanya',lg:'Bahasa',cov:'Pilih cover',bk:'Jenis buku',md:'Cara baca diari',flip:'Selak buku',scroll:'Scroll ke bawah',open:'Buka diari',th:'Tema apps',lv:'Tema live',none:'Tiada',auto:'Asal',hard:'Hardcover',spiral:'Spiral',leather:'Kulit',g_color:'Warna',g_hero:'Superhero',g_animal:'Haiwan',g_nature:'Alam',l_nature:'Alam',l_halloween:'Halloween',l_snitch:'Bola emas terbang',l_candy:'Gula-gula',l_planet:'Planet',ph:'Apa cerita hari ini…',del:'Padam halaman',delq:'Padam halaman ini?',emp:'Diari masih kosong.<br>Mulakan halaman pertama anda.',add:'＋ Halaman baru',pv:'◀ Sebelum',nx:'Seterusnya ▶',rec:'＋ Rekod momen',me:'Belum ada momen.<br>Simpan dating, event dan kenangan istimewa di sini.',nt:'Tanpa tajuk',dm:'Padam',dmq:'Padam momen ini?',sh:'Momen baru',pic:'Gambar',cat:'Kategori',ti:'Tajuk',tip:'Cth: Dating di pantai',dt:'Tarikh',ds:'Penerangan',sv:'Simpan momen',cn:'Batal',need:'Letak gambar, tajuk atau penerangan',saved:'Momen disimpan ✦',full:'Storan penuh, cuba gambar lebih kecil'},
+en:{nav:['✦ Cover','📖 Diary','📷 Moments'],sub:'Every day has its story',lg:'Language',cov:'Choose cover',bk:'Book type',md:'Reading style',flip:'Flip pages',scroll:'Scroll down',open:'Open diary',th:'App theme',lv:'Live theme',none:'None',auto:'Default',hard:'Hardcover',spiral:'Spiral',leather:'Leather',g_color:'Colour',g_hero:'Superhero',g_animal:'Animal',g_nature:'Nature',l_nature:'Nature',l_halloween:'Halloween',l_snitch:'Flying golden ball',l_candy:'Candy',l_planet:'Planets',ph:'What happened today…',del:'Delete page',delq:'Delete this page?',emp:'Your diary is empty.<br>Start your first page.',add:'＋ New page',pv:'◀ Previous',nx:'Next ▶',rec:'＋ Record a moment',me:'No moments yet.<br>Keep your dates, events and special memories here.',nt:'Untitled',dm:'Delete',dmq:'Delete this moment?',sh:'New moment',pic:'Photo',cat:'Category',ti:'Title',tip:'E.g. Date at the beach',dt:'Date',ds:'Description',sv:'Save moment',cn:'Cancel',need:'Add a photo, title or description',saved:'Moment saved ✦',full:'Storage full, try a smaller photo'}};
+
+Object.assign(T.ms,{nav:['🏠 Utama','📖 Diari','📅 Kalendar','💬 Chat','⚙️ Tetapan'],hi:'Hai',stE:'Entri',stM:'Momen',stF:'Kawan',latest:'Entri terbaru',noE:'Belum ada entri.',wr:'✍️ Tulis hari ini',diaryT:'Diari',momT:'Momen',all:'Semua',profile:'Profil',unameP:'Username (huruf kecil, nombor, _)',upl:'Atau muat naik gambar',av_h:'Manusia kartun',av_a:'Haiwan',av_s:'Superhero',av_w:'Dunia penyihir',save:'Simpan profil',saved2:'Profil disimpan ✦',taken:'Username sudah digunakan',bad:'Username 3-20 aksara: a-z, 0-9 atau _',appear:'Paparan & tema',font:'Fon',f_serif:'Serif',f_sans:'Sans',f_hand:'Tulisan tangan',f_mono:'Mono',f_round:'Bulat',friends:'Kawan',search:'Cari username kawan…',addf:'Tambah',added:'Kawan ditambah',nofr:'Belum ada kawan. Cari username di atas.',nores:'Tiada hasil',chat:'Chat',typ:'Tulis mesej…',seen:'Dilihat',today:'Hari ini',needlogin:'Kawan & chat memerlukan log masuk claude.ai. Buka pautan ini dalam claude.ai untuk guna ciri ini.',setupP:'Set username anda dalam Tetapan dahulu.',goset:'Pergi ke Tetapan',newmsg:'Mesej baru dari',nowrite:'Tak dapat hantar/simpan. Anda mungkin hanya ada akses lihat.',noday:'Tiada rekod pada tarikh ini.',addd:'＋ Entri untuk tarikh ini',nochat:'Belum ada chat. Tambah kawan dahulu.'});
+Object.assign(T.ms,{needlogin:'Log masuk dengan Google untuk guna kawan & chat.',login:'🔐 Log masuk dengan Google',logout:'Log keluar',acct:'Akaun',as:'Log masuk sebagai'});
+Object.assign(T.en,{needlogin:'Sign in with Google to use friends & chat.',login:'🔐 Sign in with Google',logout:'Sign out',acct:'Account',as:'Signed in as',nav:['🏠 Home','📖 Diary','📅 Calendar','💬 Chat','⚙️ Settings'],hi:'Hi',stE:'Entries',stM:'Moments',stF:'Friends',latest:'Latest entry',noE:'No entries yet.',wr:'✍️ Write today',diaryT:'Diary',momT:'Moments',all:'All',profile:'Profile',unameP:'Username (lowercase, numbers, _)',upl:'Or upload a photo',av_h:'Cartoon people',av_a:'Animals',av_s:'Superheroes',av_w:'Wizarding world',save:'Save profile',saved2:'Profile saved ✦',taken:'Username already taken',bad:'Username 3-20 chars: a-z, 0-9 or _',appear:'Appearance & themes',font:'Font',f_serif:'Serif',f_sans:'Sans',f_hand:'Handwriting',f_mono:'Mono',f_round:'Rounded',friends:'Friends',search:'Search friend username…',addf:'Add',added:'Friend added',nofr:'No friends yet. Search a username above.',nores:'No results',chat:'Chat',typ:'Type a message…',seen:'Seen',today:'Today',needlogin:'Friends & chat need a claude.ai sign-in. Open this link in claude.ai to use them.',setupP:'Set your username in Settings first.',goset:'Go to Settings',newmsg:'New message from',nowrite:'Could not send/save. You may only have view access.',noday:'Nothing recorded on this date.',addd:'＋ Entry for this date',nochat:'No chats yet. Add a friend first.'});
+const CA={ms:['Harian','Dating','Event','Percutian','Keluarga','Syukur','Lain-lain'],en:['Daily','Dating','Event','Travel','Family','Gratitude','Other']},CI=['📅','💕','🎉','✈️','👪','🙏','✨'];
+const AV={av_h:['👩','👨','🧑','👧','👦','👵','👴','🧔'],av_a:['🐱','🐶','🦊','🐼','🐨','🐰','🐯','🦄'],av_s:['🦸','🦸‍♀️','🦹','🦹‍♀️','🦇','🕷️','🛡️','⚡'],av_w:['🧙','🧙‍♀️','🦉','🪄','🧹','🦁','🐍','🦅','🦡']};
+const FONTS={f_serif:'Georgia,serif',f_sans:'system-ui,-apple-system,"Segoe UI",sans-serif',f_hand:'"Bradley Hand","Segoe Script","Comic Sans MS",cursive',f_mono:'ui-monospace,Menlo,Consolas,monospace',f_round:'"Trebuchet MS","Avenir Next Rounded",sans-serif'};
+const STK=['😀','😂','🥰','😎','😭','🤔','👍','🙏','🎉','❤️','🔥','✨','💯','🥳','😴','🤗','🐱','🐶','🍕','☕','🌈','🎂','🌸','⭐'];
+const DEF={cover:0,book:'hard',mode:'flip',th:-1,live:'none',lang:'ms',font:'f_serif',me:{u:'',a:'🙂'},friends:[],entries:[],moments:[],page:0};
+const _n=new Date();
+let S=load(),v='home',sub={diary:'d',chat:'c'},fcat=-1,cal={y:_n.getFullYear(),m:_n.getMonth(),sel:_n.getDate()},chatWith=null,P='',dir='fl',DAY,MON,DB=null,ME=null,PR={},M={},subs=[],MK=new Set(),stk=false,draftU=null;
+const L=k=>T[S.lang][k],p2=n=>String(n).padStart(2,'0');
+function load(){try{return Object.assign({},DEF,JSON.parse(localStorage.getItem('zn')||'{}'))}catch(e){return Object.assign({},DEF)}}
+function save(){try{localStorage.setItem('zn',JSON.stringify(S))}catch(e){toast(L('full'))}}
+function setLang(){DAY=DL[S.lang];MON=ML[S.lang];document.documentElement.lang=S.lang;$('#splash p').textContent=L('sub')}
+function applyFont(){document.body.style.fontFamily=FONTS[S.font]||FONTS.f_serif}
+function applyTh(){const r=document.documentElement.style,t=THM[S.th];['--acc','--bg','--card','--line','--ink','--mut'].forEach((p,i)=>t?r.setProperty(p,t[i+2]):r.removeProperty(p))}
+function live(){const A=$('#live');A.innerHTML='';const c=LV[S.live];if(!c)return;
+  for(let i=0;i<c.n;i++){const s=document.createElement('span'),r=Math.random,d=8+r()*10,a=c.a;s.className='f';s.innerHTML=c.e[i%c.e.length];
+    s.style.fontSize=(18+r()*18)+'px';
+    s.style.left=(a=='fly'?-12:a=='snit'?0:r()*95)+'vw';
+    s.style.top=a=='rise'?'105vh':a=='fall'?'0':(r()*70)+'vh';
+    s.style.setProperty('--dx',(r()*30-15)+'vw');s.style.setProperty('--dy',(r()*40-20)+'vh');
+    s.style.animation=a+' '+(a=='snit'?10+r()*6:d)+'s '+(a=='drift'?'ease-in-out':'linear')+' '+(-r()*d)+'s infinite';
+    A.appendChild(s)}}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200)}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dim=(y,m)=>new Date(y,m+1,0).getDate();
+function todayStr(){const n=new Date();return DAY[n.getDay()]+', '+n.getDate()+' '+MON[n.getMonth()]+' '+n.getFullYear()}
+function burst(el){for(let i=0;i<9;i++){const s=document.createElement('span');s.className='sp';s.textContent='✦';const a=Math.random()*6.28,r=40+Math.random()*40;s.style.setProperty('--x',Math.cos(a)*r+'px');s.style.setProperty('--y',Math.sin(a)*r+'px');el.appendChild(s);setTimeout(()=>s.remove(),900)}}
+const seg=(arr,cur,attr)=>`<div class="seg">${arr.map(a=>`<button class="${cur==a[0]?'sel':''}" data-${attr}="${a[0]}">${a[1]}</button>`).join('')}</div>`;
+
+const unread=()=>S.friends.reduce((a,f)=>a+(M[f]||[]).filter(m=>m.from!=ME&&!m.seen).length,0);
+const pr=id=>PR[id]||{username:'?',avatar:'🙂'};
+const rr=()=>{if(!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))render()};
+const pair=(a,b)=>[a,b].sort().join('_');
+const av=(a,s)=>`<span class="av" style="--s:${s}px">${a&&a.startsWith('data:')?`<img src="${a}" alt="">`:(a||'🙂')}</span>`;
+function render(){const un=$('#un');if(un)draftU=un.value;
+  const t=THM[S.th],tb=t?`<div class="tb">${(t[1]+' ').repeat(5)}</div>`:'',V={home,diary,cal:calv,chat,set:setv};
+  $('#app').innerHTML=tb+V[v]();
+  const u=unread();
+  document.querySelectorAll('nav button').forEach((b,i)=>{b.textContent=L('nav')[i];if(i==3&&u)b.innerHTML+=` <span class="bd">${u}</span>`;b.classList.toggle('on',b.dataset.v==v)});
+  document.querySelectorAll('#app .logo').forEach(l=>l.innerHTML=LOGO);
+  if(v=='chat'&&chatWith)paintMsgs()}
+function home(){const c=COV[S.cover],E=S.entries,l=E[E.length-1];
+  return `<div class="row" style="cursor:default"><div class="book sm ${S.book}" style="background:${c.b};color:${c.i}"><span class="logo"></span><h2>ZN</h2></div><div>${av(S.me.a,40)}<br><b>${L('hi')}, ${esc(S.me.u||'—')}</b><br><small>${todayStr()}</small></div></div>
+  <div class="st2"><div><b>${E.length}</b>${L('stE')}</div><div><b>${S.moments.length}</b>${L('stM')}</div><div><b>${S.friends.length}</b>${L('stF')}</div></div>
+  <h3>${L('latest')}</h3>${l?`<div class="page ${S.book}"><small>${CI[l.c||0]} ${CA[S.lang][l.c||0]} · ${DAY[new Date(l.y,l.m,l.d).getDay()]}, ${l.d} ${MON[l.m]}</small><p style="white-space:pre-wrap;margin:6px 0 0">${esc(l.t.slice(0,160))||'…'}</p></div>`:`<div class="empty">${L('noE')}</div>`}
+  <button class="pri" data-new>${L('wr')}</button>`}
+function pg(e,cls){const mx=dim(e.y,e.m);
+  return `<div class="page ${S.book} ${cls||''}" data-id="${e.id}"><div class="dsel"><span class="dn">${DAY[new Date(e.y,e.m,Math.min(e.d,mx)).getDay()]}</span>
+  <select data-f="d">${Array.from({length:31},(_,i)=>`<option ${e.d==i+1?'selected':''}>${i+1}</option>`).join('')}</select>
+  <select data-f="m">${MON.map((m,i)=>`<option value="${i}" ${e.m==i?'selected':''}>${m}</option>`).join('')}</select>
+  <input class="y" type="number" data-f="y" value="${e.y}"></div>
+  <div class="dsel"><select data-f="c">${CA[S.lang].map((c,i)=>`<option value="${i}" ${(e.c||0)==i?'selected':''}>${CI[i]} ${c}</option>`).join('')}</select></div>
+  <textarea data-f="t" placeholder="${L('ph')}">${esc(e.t)}</textarea>
+  <button class="del" data-del="${e.id}">${L('del')}</button></div>`}
+function diary(){return seg([['d',L('diaryT')],['m',L('momT')]],sub.diary,'sd')+(sub.diary=='m'?mom():dlist())}
+function dlist(){const E=S.entries.filter(e=>fcat<0||(e.c||0)==fcat),ad=`<button class="add" data-add>${L('add')}</button>`;
+  const ch=`<div class="chips"><button class="${fcat<0?'sel':''}" data-fc="-1">${L('all')}</button>${CA[S.lang].map((c,i)=>`<button class="${fcat==i?'sel':''}" data-fc="${i}">${CI[i]} ${c}</button>`).join('')}</div>`;
+  if(!E.length)return ch+`<div class="empty">${L('emp')}</div>`+ad;
+  if(S.mode=='scroll')return ch+E.map(e=>pg(e)).join('')+ad;
+  S.page=Math.max(0,Math.min(S.page,E.length-1));
+  return ch+pg(E[S.page],dir)+`<div class="ctl"><button data-pv ${S.page==0?'disabled':''}>${L('pv')}</button><span>${S.page+1} / ${E.length}</span><button data-nx ${S.page==E.length-1?'disabled':''}>${L('nx')}</button></div>`+ad}
+function addEntry(d){const n=d||new Date();S.entries.push({id:Date.now(),d:n.getDate(),m:n.getMonth(),y:n.getFullYear(),c:fcat<0?0:fcat,t:''});S.page=1e9;dir='fl'}
+function calv(){const{y,m}=cal,f=new Date(y,m,1).getDay(),n=dim(y,m),has=new Set(),tn=new Date(),iso=y+'-'+p2(m+1)+'-';
+  S.entries.forEach(e=>{if(e.y==y&&e.m==m)has.add(e.d)});S.moments.forEach(o=>{if(String(o.dt).startsWith(iso))has.add(+o.dt.slice(8,10))});
+  let g=DAY.map(d=>`<b>${d.slice(0,3)}</b>`).join('')+'<i></i>'.repeat(f);
+  for(let d=1;d<=n;d++)g+=`<button data-cd="${d}" class="${has.has(d)?'dot ':''}${cal.sel==d?'sel ':''}${tn.getFullYear()==y&&tn.getMonth()==m&&tn.getDate()==d?'td':''}">${d}</button>`;
+  const es=S.entries.filter(e=>e.y==y&&e.m==m&&e.d==cal.sel),ms=S.moments.filter(o=>o.dt==iso+p2(cal.sel));
+  return `<div class="ctl" style="margin-bottom:10px"><button data-cm="-1">◀</button><b>${MON[m]} ${y}</b><button data-cm="1">▶</button></div><div class="cal">${g}</div><h3>${cal.sel} ${MON[m]} ${y}</h3>`
+  +es.map(e=>`<div class="mc"><div><span class="chip">${CI[e.c||0]} ${CA[S.lang][e.c||0]}</span><p style="margin:6px 0 0;white-space:pre-wrap">${esc(e.t.slice(0,200))}</p></div></div>`).join('')
+  +ms.map(o=>`<div class="mc">${o.img?`<img src="${o.img}" alt="">`:''}<div><b>${esc(o.t||L('nt'))}</b><p style="margin:4px 0 0">${esc(o.ds)}</p></div></div>`).join('')
+  +(es.length||ms.length?'':`<div class="empty" style="padding:14px">${L('noday')}</div>`)+`<button class="add" data-addd>${L('addd')}</button>`}
+function setv(){return `<details open><summary>🔐 ${L('acct')}</summary>${USER?`<div class="row" style="cursor:default"><div style="flex:1;min-width:0"><small>${L('as')}</small><br><b>${esc(USER.email||'')}</b></div><button class="add" style="width:auto;margin:0" data-logout>${L('logout')}</button></div>`:`<button class="pri" style="margin:8px 0" data-login>${L('login')}</button>`}</details><details open><summary>👤 ${L('profile')}</summary><div class="row" style="cursor:default">${av(S.me.a,56)}<input type="text" id="un" placeholder="${L('unameP')}" value="${esc(draftU??S.me.u)}" style="flex:1;min-width:0"></div>
+  ${Object.entries(AV).map(([k,a])=>`<div class="gl">${L(k)}</div><div class="sw">${a.map(e=>`<button data-av="${e}" style="background:var(--line);font-size:24px">${e}</button>`).join('')}</div>`).join('')}
+  <div class="gl">${L('upl')}</div><input type="file" accept="image/*" id="af"><button class="pri" style="margin:12px 0" data-saveme>${L('save')}</button></details>
+  <details><summary>🌐 ${L('lg')} · ${L('font')}</summary>${seg([['ms','Bahasa Melayu'],['en','English']],S.lang,'lg')}<div class="gl">${L('font')}</div>${seg(Object.keys(FONTS).map(k=>[k,L(k)]),S.font,'ft')}</details>
+  <details><summary>🎨 ${L('appear')}</summary>${appear()}</details>`}
+function syncMe(){if(DB&&ME&&S.me.u)DB.collection('profiles').doc(ME).set({username:S.me.u,avatar:S.me.a}).catch(()=>toast(L('nowrite')))}
+function chat(){if(!DB)return `<div class="empty">${L('needlogin')}</div><button class="pri" data-login>${L('login')}</button>`;
+  if(!S.me.u)return `<div class="empty">${L('setupP')}</div><button class="add" data-goset>${L('goset')}</button>`;
+  if(chatWith)return room();
+  const tg=seg([['c',L('chat')],['f',L('friends')]],sub.chat,'sc');
+  if(sub.chat=='f')return tg+`<input type="text" id="fs" placeholder="${L('search')}" style="width:100%;margin-bottom:8px"><div id="fr"></div><h3>${L('stF')}</h3>`+(S.friends.length?S.friends.map(f=>{const p=pr(f);return `<div class="row" data-open="${f}">${av(p.avatar,40)}<b style="flex:1">@${esc(p.username)}</b><button class="del" data-rmf="${f}">✕</button></div>`}).join(''):`<div class="empty">${L('nofr')}</div>`);
+  return tg+(S.friends.length?S.friends.map(f=>{const p=pr(f),a=(M[f]||[]).slice().sort((x,y)=>x.t-y.t),l=a[a.length-1],n=a.filter(m=>m.from!=ME&&!m.seen).length;
+    return `<div class="row" data-open="${f}">${av(p.avatar,44)}<div style="flex:1;min-width:0"><b>@${esc(p.username)}</b><br><small>${l?esc(l.img?'📷':l.st||l.text||''):''}</small></div><small>${l?new Date(l.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''}</small>${n?`<span class="bd">${n}</span>`:''}</div>`}).join(''):`<div class="empty">${L('nochat')}</div>`)}
+function room(){const p=pr(chatWith);
+  return `<div class="row" style="cursor:default"><button class="del" data-back>←</button>${av(p.avatar,36)}<b>@${esc(p.username)}</b></div><div class="chat" id="msgs"></div>${stk?`<div class="stk">${STK.map(s=>`<button data-ss="${s}">${s}</button>`).join('')}</div>`:''}
+  <div class="cbar"><label class="add" style="width:auto;margin:0;cursor:pointer">📷<input type="file" accept="image/*" id="cf" hidden></label><button class="add" style="width:auto;margin:0" data-stk>😊</button><input type="text" id="ct" placeholder="${L('typ')}"><button class="add" style="width:auto;margin:0" data-send>➤</button></div>`}
+function paintMsgs(){const c=$('#msgs');if(!c)return;const arr=(M[chatWith]||[]).slice().sort((a,b)=>a.t-b.t);let last='',h='';
+  arr.forEach(m=>{const d=new Date(m.t),k=d.toDateString();
+    if(k!=last){last=k;h+=`<div class="dsep">${k==new Date().toDateString()?L('today'):DAY[d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear()}</div>`}
+    const me=m.from==ME;
+    h+=`<div class="m ${me?'me':''}">${m.img?`<img src="${m.img}" alt="">`:''}${m.st?`<div class="st">${m.st}</div>`:''}${m.text?`<div>${esc(m.text)}</div>`:''}<small>${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}${me?(m.seen?' ✓✓ '+L('seen'):' ✓'):''}</small></div>`;
+    if(!me&&!m.seen&&!MK.has(m.id)){MK.add(m.id);DB.doc('chats/'+pair(ME,chatWith)+'/msgs/'+m.id).update({seen:Date.now()}).catch(()=>{})}});
+  c.innerHTML=h;window.scrollTo(0,document.body.scrollHeight)}
+function send(o){if(!DB||!chatWith)return;DB.collection('chats/'+pair(ME,chatWith)+'/msgs').add(Object.assign({from:ME,t:Date.now(),seen:0},o)).catch(()=>toast(L('nowrite')))}
+function paintFR(q){q=q.trim().toLowerCase().replace(/^@/,'');const r=Object.entries(PR).filter(([id,p])=>id!=ME&&q&&String(p.username).includes(q)&&!S.friends.includes(id)).slice(0,10);
+  $('#fr').innerHTML=!q?'':r.length?r.map(([id,p])=>`<div class="row" style="cursor:default">${av(p.avatar,40)}<b style="flex:1">@${esc(p.username)}</b><button class="add" style="width:auto;margin:0" data-addf="${id}">${L('addf')}</button></div>`).join(''):`<div class="empty" style="padding:10px">${L('nores')}</div>`}
+function subAll(){subs.forEach(u=>u());subs=[];if(!DB)return;
+  S.friends.forEach(f=>{let init=false;subs.push(DB.collection('chats/'+pair(ME,f)+'/msgs').orderBy('t','desc').limit(100).onSnapshot(s=>{
+    s.docChanges().forEach(c=>{const d=c.doc.data();if(init&&c.type=='added'&&d.from!=ME&&!(v=='chat'&&chatWith==f)){toast(L('newmsg')+' @'+pr(f).username);try{navigator.vibrate&&navigator.vibrate(80)}catch(e){}}});
+    init=true;M[f]=s.docs.map(d=>Object.assign({id:d.id},d.data()));
+    if(v=='chat'&&chatWith==f)paintMsgs();else rr()},()=>{}))})}
+let USER=null;
+function initFB(){const F=window.ZNFB;if(!F||initFB.d)return;initFB.d=1;
+  F.onAuth(u=>{subs.forEach(x=>x());subs=[];PR={};M={};
+    if(u){USER=u;ME=u.uid;DB=F.db;DB.collection('profiles').onSnapshot(sn=>{PR={};sn.docs.forEach(x=>PR[x.id]=x.data());rr()},()=>{});subAll();syncMe()}
+    else{USER=null;ME=null;DB=null;chatWith=null}
+    render()})}
+function appear(){const c=COV[S.cover],G=['color','hero','animal','nature'];
+  return `
+  <h3>${L('cov')}</h3><div class="sw">${COV.map((c,i)=>`<button class="${i==S.cover?'sel':''}" data-cv="${i}" style="background:${c.b}" title="${c.n}">${c.e}</button>`).join('')}</div>
+  <h3>${L('bk')}</h3>${seg([['hard',L('hard')],['spiral',L('spiral')],['leather',L('leather')]],S.book,'bk')}
+  <h3>${L('md')}</h3>${seg([['flip',L('flip')],['scroll',L('scroll')]],S.mode,'md')}
+  <h3>${L('th')}</h3><div class="sw"><button class="${S.th<0?'sel':''}" data-th="-1" style="background:var(--card);font-size:11px">${L('auto')}</button></div>
+  ${G.map(g=>`<div class="gl">${L('g_'+g)}</div><div class="sw">${THM.map((t,i)=>t[0]==g?`<button class="${S.th==i?'sel':''}" data-th="${i}" style="background:${t[2]}">${t[1]}</button>`:'').join('')}</div>`).join('')}
+  <h3>${L('lv')}</h3>${seg([['none',L('none')]].concat(Object.keys(LV).map(k=>[k,L('l_'+k)])),S.live,'lv')}
+`}
+
+function mom(){
+  return `<button class="pri" style="margin:0 0 16px" data-sheet>${L('rec')}</button>`+(S.moments.length?S.moments.map(m=>{const d=new Date(m.dt+'T00:00'),c=typeof m.c=='number'?CT[S.lang][m.c]:m.c;
+  return `<div class="mc">${m.img?`<img src="${m.img}" alt="">`:''}<div><span class="chip">${esc(c)}</span> <small>${DAY[d.getDay()]}, ${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}</small><h4 style="margin:6px 0 2px">${esc(m.t||L('nt'))}</h4><p style="margin:0;white-space:pre-wrap">${esc(m.ds)}</p><button class="del" data-dm="${m.id}">${L('dm')}</button></div></div>`}).join(''):`<div class="empty">${L('me')}</div>`)}
+function sheet(){const n=new Date(),iso=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');P='';
+  $('#sbody').innerHTML=`<h3 style="margin-top:0">${L('sh')}</h3><label>${L('pic')}</label><input type="file" accept="image/*" id="mf"><img id="ph" alt="">
+  <label>${L('cat')}</label><select id="mc">${CT[S.lang].map((c,i)=>`<option value="${i}">${c}</option>`).join('')}</select>
+  <label>${L('ti')}</label><input type="text" id="mt" placeholder="${L('tip')}">
+  <label>${L('dt')}</label><input type="date" id="md" value="${iso}">
+  <label>${L('ds')}</label><textarea id="ms"></textarea>
+  <button class="pri" data-savem>${L('sv')}</button><button class="del" style="width:100%;margin-top:8px" data-close>${L('cn')}</button>`;
+  $('#sheet').classList.add('on')}
+function rs(f,m=720){return new Promise(r=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);r(c.toDataURL('image/jpeg',.7))};im.src=fr.result};fr.readAsDataURL(f)})}
+
+document.addEventListener('click',e=>{const t=e.target,q=s=>t.closest(s);let x;
+  if(q('.logo')){burst(q('.logo'));return}
+  if(x=q('nav button')){v=x.dataset.v;chatWith=null;render();window.scrollTo(0,0);return}
+  if(x=q('[data-lg]')){S.lang=x.dataset.lg;setLang()}
+  else if(x=q('[data-ft]')){S.font=x.dataset.ft;applyFont()}
+  else if(x=q('[data-cv]')){S.cover=+x.dataset.cv}
+  else if(x=q('[data-bk]')){S.book=x.dataset.bk}
+  else if(x=q('[data-md]')){S.mode=x.dataset.md}
+  else if(x=q('[data-th]')){S.th=+x.dataset.th;applyTh()}
+  else if(x=q('[data-lv]')){S.live=x.dataset.lv;live()}
+  else if(x=q('[data-sd]')){sub.diary=x.dataset.sd}
+  else if(x=q('[data-sc]')){sub.chat=x.dataset.sc;chatWith=null}
+  else if(x=q('[data-fc]')){fcat=+x.dataset.fc;S.page=0}
+  else if(q('[data-new]')){v='diary';sub.diary='d';fcat=-1;addEntry()}
+  else if(q('[data-add]')){addEntry()}
+  else if(q('[data-addd]')){fcat=-1;addEntry(new Date(cal.y,cal.m,cal.sel));v='diary';sub.diary='d'}
+  else if(x=q('[data-del]')){if(!confirm(L('delq')))return;S.entries=S.entries.filter(a=>a.id!=x.dataset.del);dir='fr'}
+  else if(q('[data-pv]')){S.page--;dir='fr'}
+  else if(q('[data-nx]')){S.page++;dir='fl'}
+  else if(x=q('[data-cm]')){cal.m+=+x.dataset.cm;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}cal.sel=Math.min(cal.sel,dim(cal.y,cal.m))}
+  else if(x=q('[data-cd]')){cal.sel=+x.dataset.cd}
+  else if(x=q('[data-av]')){S.me.a=x.dataset.av;syncMe()}
+  else if(q('[data-saveme]')){const u=($('#un').value||'').trim().toLowerCase();
+    if(!/^[a-z0-9_]{3,20}$/.test(u)){toast(L('bad'));return}
+    if(Object.entries(PR).some(([id,p])=>id!=ME&&p.username==u)){toast(L('taken'));return}
+    S.me.u=u;draftU=null;syncMe();toast(L('saved2'))}
+  else if(q('[data-login]')){ZNFB.login().catch(e=>toast(e.code||'error'));return}
+  else if(q('[data-logout]')){ZNFB.logout();return}
+  else if(q('[data-goset]')){v='set'}
+  else if(x=q('[data-rmf]')){S.friends=S.friends.filter(f=>f!=x.dataset.rmf);subAll()}
+  else if(x=q('[data-addf]')){S.friends.push(x.dataset.addf);subAll();toast(L('added'))}
+  else if(x=q('[data-open]')){chatWith=x.dataset.open;stk=false;save();render();window.scrollTo(0,document.body.scrollHeight);return}
+  else if(q('[data-back]')){chatWith=null}
+  else if(q('[data-stk]')){stk=!stk}
+  else if(x=q('[data-ss]')){send({st:x.dataset.ss});stk=false}
+  else if(q('[data-send]')){const i=$('#ct');if(i&&i.value.trim()){send({text:i.value.trim()});i.value=''}return}
+  else if(q('[data-sheet]')){sheet();return}
+  else if(q('[data-close]')||t.id=='sheet'){$('#sheet').classList.remove('on');return}
+  else if(q('[data-savem]')){
+    if(!P&&!$('#mt').value.trim()&&!$('#ms').value.trim()){toast(L('need'));return}
+    S.moments.unshift({id:Date.now(),img:P,c:+$('#mc').value,t:$('#mt').value,dt:$('#md').value,ds:$('#ms').value});
+    $('#sheet').classList.remove('on');toast(L('saved'))}
+  else if(x=q('[data-dm]')){if(!confirm(L('dmq')))return;S.moments=S.moments.filter(a=>a.id!=x.dataset.dm)}
+  else return;
+  save();render()});
+document.addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target.id=='ct'){e.preventDefault();const i=e.target;if(i.value.trim()){send({text:i.value.trim()});i.value=''}}});
+document.addEventListener('input',e=>{const t=e.target;
+  if(t.id=='mf'&&t.files[0]){rs(t.files[0]).then(d=>{P=d;const p=$('#ph');p.src=d;p.style.display='block'});return}
+  if(t.id=='af'&&t.files[0]){rs(t.files[0],96).then(d=>{S.me.a=d;save();syncMe();render()});return}
+  if(t.id=='cf'&&t.files[0]){rs(t.files[0],400).then(d=>send({img:d}));t.value='';return}
+  if(t.id=='fs'){paintFR(t.value);return}
+  const f=t.dataset.f,pe=t.closest('.page');if(!f||!pe)return;
+  const en=S.entries.find(a=>a.id==pe.dataset.id);if(!en)return;
+  en[f]=f=='t'?t.value:+t.value;save();
+  if(f=='d'||f=='m'||f=='y'){const mx=dim(en.y,en.m);pe.querySelector('.dn').textContent=DAY[new Date(en.y,en.m,Math.min(en.d,mx)).getDay()]}});
+$('#slogo').innerHTML=LOGO;
+$('#slogo').addEventListener('click',()=>burst($('#slogo')));
+setLang();applyTh();applyFont();live();
+setTimeout(()=>{$('#splash').classList.add('out');setTimeout(()=>$('#splash').remove(),800)},3000);
+render();window.addEventListener('znfb',initFB);initFB();
+</script><script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,doc,setDoc,updateDoc,addDoc,onSnapshot,query,orderBy as ob,limit as lm} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyBqTYWhaafqKEcLdA_8_0n8qnPCskLFwEo",authDomain:"zn-diary.firebaseapp.com",projectId:"zn-diary",storageBucket:"zn-diary.firebasestorage.app",messagingSenderId:"36315297490",appId:"1:36315297490:web:6226a08f619ae9fa3fdf0b"});
+const auth=getAuth(app),fs=getFirestore(app);
+const dw=r=>({set:d=>setDoc(r,d),update:d=>updateDoc(r,d)});
+const mk=(c,q)=>({orderBy:(f,d)=>mk(c,query(q,ob(f,d))),limit:n=>mk(c,query(q,lm(n))),onSnapshot:(a,b)=>onSnapshot(q,a,b),doc:id=>dw(doc(c,id)),add:d=>addDoc(c,d)});
+window.ZNFB={onAuth:cb=>onAuthStateChanged(auth,cb),login:()=>signInWithPopup(auth,new GoogleAuthProvider()),logout:()=>signOut(auth),
+  db:{collection:p=>{const c=collection(fs,p);return mk(c,c)},doc:p=>dw(doc(fs,p))}};
+window.dispatchEvent(new Event('znfb'));
+</script>
+<script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+</body></html>
